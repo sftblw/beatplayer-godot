@@ -10,4 +10,8 @@
 - [x] bpm awareness
 - [x] support minus offset
 - [x] linear interpolated playback offset
-- [ ] TODO: bpm shift awareness
+
+## todo
+
+- [ ] bpm shift awareness
+- [ ] support looping audio
