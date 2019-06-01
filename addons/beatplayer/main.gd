@@ -7,4 +7,4 @@ func _enter_tree():
     add_custom_type(beatplayer_name, "AudioStreamPlayer", preload("beatplayer.gd"), preload("beatplayer_icon.png"))
 
 func _exit_tree():
-    remove_custom_node(beatplayer_name)
+    remove_custom_type(beatplayer_name)
