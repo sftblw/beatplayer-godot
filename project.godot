@@ -8,15 +8,24 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "AudioStreamPlayer",
+"class": "BeatPlayer",
+"language": "GDScript",
+"path": "res://addons/beatplayer/beatplayer.gd"
+} ]
 _global_script_class_icons={
-
+"BeatPlayer": ""
 }
 
 [application]
 
 config/name="beatplayer"
 config/icon="res://icon.png"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "beatplayer" )
 
 [rendering]
 
