@@ -1,5 +1,5 @@
 extends AudioStreamPlayer
-
+class_name BeatPlayer
 # # brief
 # beatplayer is simple stream player for rhythm games which wraps AudioStreamPlayer.
 #
@@ -54,12 +54,14 @@ func playback_to_beat(playback_pos: float) -> float:
 ##################################
 
 func play_absolute(from_position: float = 0.0) -> void:
-	.play(from_position - offset)
+	play(from_position - offset)
 
 func play(from_position: float = 0.0):
 	if self.stream == null:
 		return
 		
+	_prevent_loop()
+	
 	self.playback_position = from_position
 	if from_position + offset >= 0.0:
 		.play(from_position + offset)
@@ -86,10 +88,10 @@ func stop() -> void:
 #####################
 
 func _ready() -> void:
-	var error: int = connect("finished", self, "_finished")
+	var error: int = connect("finished", self, "__finished_beatplayer")
 	if error != OK:
 		print_debug(error)
-		
+	
 	set_process(false) # it seems like AudioStreamPlayer automatically sets processing to true
 
 func _process(delta: float) -> void:
@@ -125,6 +127,16 @@ func _interpolate_playback_position(delta: float) -> void:
 			else:
 				_playback_position_interpolated = super_pos
 
-func _finished() -> void:
+func __finished_beatplayer() -> void:
 	self.playback_position = .get_playback_position()
 	set_process(false)
+	
+func _prevent_loop():
+	var stream = .get_stream()
+	if stream is AudioStreamOGGVorbis:
+		var stream_ogg: AudioStreamOGGVorbis = stream as AudioStreamOGGVorbis
+		if stream_ogg != null: stream_ogg.loop = false
+	
+	if stream is AudioStreamSample:
+		var stream_sample: AudioStreamSample = stream as AudioStreamSample
+		if stream_sample != null: stream_sample.loop_mode = AudioStreamSample.LOOP_DISABLED
