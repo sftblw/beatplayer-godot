@@ -86,7 +86,10 @@ func stop() -> void:
 #####################
 
 func _ready() -> void:
-	var result = connect("finished", self, "_finished")
+	var error: int = connect("finished", self, "_finished")
+	if error != OK:
+		print_debug(error)
+		
 	set_process(false) # it seems like AudioStreamPlayer automatically sets processing to true
 
 func _process(delta: float) -> void:
