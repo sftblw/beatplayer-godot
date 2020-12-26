@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://test/test.gd" type="Script" id=1]
 [ext_resource path="res://test/ch - untitled for beatplayer.ogg" type="AudioStream" id=2]
 [ext_resource path="res://addons/beatplayer/beatplayer.gd" type="Script" id=3]
 [ext_resource path="res://addons/beatplayer/beatplayer_icon.png" type="Texture" id=4]
+[ext_resource path="res://test/test_theme.tres" type="Theme" id=5]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Label
@@ -29,7 +30,13 @@ func _on_test_beatplayer_changed(beatplayer: BeatPlayer):
 [node name="test" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+theme = ExtResource( 5 )
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+play_pos_node = NodePath("hbox_all/vbox_control/hbox_play/play_pos")
+play_from_pos_node = NodePath("hbox_all/vbox_control/hbox_play_from/play_from_pos")
 
 [node name="BeatPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 2 )
@@ -38,72 +45,133 @@ __meta__ = {
 "_editor_icon": ExtResource( 4 )
 }
 bpm = 130.0
-offset = 1.0
+music_offset = 1.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="hbox_all" type="HBoxContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
 alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
-margin_left = 370.0
-margin_right = 467.0
+[node name="vbox_control" type="VBoxContainer" parent="hbox_all"]
+margin_right = 249.0
 margin_bottom = 600.0
 
-[node name="play_btn" type="Button" parent="HBoxContainer/VBoxContainer"]
-margin_right = 97.0
-margin_bottom = 20.0
+[node name="hbox_play" type="HBoxContainer" parent="hbox_all/vbox_control"]
+margin_right = 249.0
+margin_bottom = 24.0
+
+[node name="play_btn" type="Button" parent="hbox_all/vbox_control/hbox_play"]
+margin_right = 155.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
 text = "play"
 
-[node name="play_absolute_btn" type="Button" parent="HBoxContainer/VBoxContainer"]
-margin_top = 24.0
-margin_right = 97.0
-margin_bottom = 44.0
-text = "play absolute"
+[node name="play_pos" type="SpinBox" parent="hbox_all/vbox_control/hbox_play"]
+margin_left = 175.0
+margin_right = 249.0
+margin_bottom = 24.0
+step = 0.0
+allow_greater = true
+allow_lesser = true
 
-[node name="stop" type="Button" parent="HBoxContainer/VBoxContainer"]
-margin_top = 48.0
-margin_right = 97.0
-margin_bottom = 68.0
+[node name="hbox_play_from" type="HBoxContainer" parent="hbox_all/vbox_control"]
+margin_top = 34.0
+margin_right = 249.0
+margin_bottom = 58.0
+
+[node name="play_from_btn" type="Button" parent="hbox_all/vbox_control/hbox_play_from"]
+margin_right = 155.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "play from music offset"
+
+[node name="play_from_pos" type="SpinBox" parent="hbox_all/vbox_control/hbox_play_from"]
+margin_left = 175.0
+margin_right = 249.0
+margin_bottom = 24.0
+step = 0.0
+allow_greater = true
+allow_lesser = true
+
+[node name="stop" type="Button" parent="hbox_all/vbox_control"]
+margin_top = 68.0
+margin_right = 249.0
+margin_bottom = 88.0
 text = "stop"
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer"]
-margin_left = 471.0
-margin_right = 592.0
+[node name="VSeparator" type="VSeparator" parent="hbox_all"]
+margin_left = 269.0
+margin_right = 273.0
 margin_bottom = 600.0
 
-[node name="playback_position" type="Label" parent="HBoxContainer/VBoxContainer2"]
-margin_right = 121.0
+[node name="vbox_display" type="VBoxContainer" parent="hbox_all"]
+margin_left = 293.0
+margin_right = 446.0
+margin_bottom = 600.0
+
+[node name="playback_position" type="Label" parent="hbox_all/vbox_display"]
+margin_right = 153.0
 margin_bottom = 14.0
-text = "playback_position: "
+text = "playback_position: x.xxx"
 script = SubResource( 1 )
 
-[node name="beat" type="Label" parent="HBoxContainer/VBoxContainer2"]
-margin_top = 18.0
-margin_right = 121.0
-margin_bottom = 32.0
+[node name="beat" type="Label" parent="hbox_all/vbox_display"]
+margin_top = 24.0
+margin_right = 153.0
+margin_bottom = 38.0
 text = "beat: "
 script = SubResource( 2 )
 
-[node name="VBoxContainer3" type="VBoxContainer" parent="HBoxContainer"]
-margin_left = 596.0
-margin_right = 654.0
+[node name="VSeparator2" type="VSeparator" parent="hbox_all"]
+margin_left = 466.0
+margin_right = 470.0
 margin_bottom = 600.0
 
-[node name="bpm_label" type="Label" parent="HBoxContainer/VBoxContainer3"]
-margin_right = 58.0
-margin_bottom = 14.0
+[node name="vbox_bpm" type="VBoxContainer" parent="hbox_all"]
+margin_left = 490.0
+margin_right = 597.0
+margin_bottom = 600.0
+
+[node name="hbox_bpm" type="HBoxContainer" parent="hbox_all/vbox_bpm"]
+margin_right = 107.0
+margin_bottom = 24.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="bpm_label" type="Label" parent="hbox_all/vbox_bpm/hbox_bpm"]
+margin_top = 5.0
+margin_right = 29.0
+margin_bottom = 19.0
 text = "bpm"
 
-[node name="bpm_edit" type="LineEdit" parent="HBoxContainer/VBoxContainer3"]
-margin_top = 18.0
-margin_right = 58.0
-margin_bottom = 42.0
+[node name="bpm_edit" type="LineEdit" parent="hbox_all/vbox_bpm/hbox_bpm"]
+margin_left = 49.0
+margin_right = 107.0
+margin_bottom = 24.0
 script = SubResource( 3 )
-[connection signal="beatplayer_changed" from="." to="HBoxContainer/VBoxContainer3/bpm_edit" method="_on_test_beatplayer_changed"]
-[connection signal="playback_changed" from="." to="HBoxContainer/VBoxContainer2/playback_position" method="_on_test_playback_changed"]
-[connection signal="playback_changed" from="." to="HBoxContainer/VBoxContainer2/beat" method="_on_test_playback_changed"]
-[connection signal="pressed" from="HBoxContainer/VBoxContainer/play_btn" to="." method="_on_play_btn_pressed"]
-[connection signal="pressed" from="HBoxContainer/VBoxContainer/play_absolute_btn" to="." method="_on_play_absolute_btn_pressed"]
-[connection signal="pressed" from="HBoxContainer/VBoxContainer/stop" to="." method="_on_stop_pressed"]
-[connection signal="text_entered" from="HBoxContainer/VBoxContainer3/bpm_edit" to="." method="_on_bpm_edit_text_entered"]
+
+[node name="VSeparator3" type="VSeparator" parent="hbox_all"]
+margin_left = 617.0
+margin_right = 621.0
+margin_bottom = 600.0
+
+[node name="log" type="TextEdit" parent="hbox_all"]
+margin_left = 641.0
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+readonly = true
+wrap_enabled = true
+[connection signal="beatplayer_changed" from="." to="hbox_all/vbox_bpm/hbox_bpm/bpm_edit" method="_on_test_beatplayer_changed"]
+[connection signal="playback_changed" from="." to="hbox_all/vbox_display/playback_position" method="_on_test_playback_changed"]
+[connection signal="playback_changed" from="." to="hbox_all/vbox_display/beat" method="_on_test_playback_changed"]
+[connection signal="pressed" from="hbox_all/vbox_control/hbox_play/play_btn" to="." method="_on_play_btn_pressed"]
+[connection signal="pressed" from="hbox_all/vbox_control/hbox_play_from/play_from_btn" to="." method="_on_play_from_btn_pressed"]
+[connection signal="pressed" from="hbox_all/vbox_control/stop" to="." method="_on_stop_pressed"]
+[connection signal="text_entered" from="hbox_all/vbox_bpm/hbox_bpm/bpm_edit" to="." method="_on_bpm_edit_text_entered"]

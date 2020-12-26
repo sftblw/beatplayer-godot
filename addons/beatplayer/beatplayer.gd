@@ -3,17 +3,17 @@ class_name BeatPlayer
 # # brief
 # beatplayer is simple stream player for rhythm games which wraps AudioStreamPlayer.
 #
-# - interpolated offset with process() → don't manually enable or disable processing.
+# - interpolated playback position with process() → don't manually enable or disable processing.
 # - knowledge of bpm and beat
-# - supports minus playback offset
+# - supports minus playback position
 
 var playback_position: float setget _set_playback_position, get_playback_position
 var _playback_position_last_known: float = 0
-var _playback_position_interpolated: float = 0 # interpolated offset by physics_process or process
+var _playback_position_interpolated: float = 0 # interpolated position by physics_process or process
 
 export(float) var bpm: float = 100.0 # this can be set anytime since this value dosesn't affect other variables
 
-export(float) var offset: float = 0.0 # beat calculation offset in second. does not affect to playback position
+export(float) var music_offset: float = 0.0 # beat calculation offset where music starts in second. does not affect to playback position
 var beat: float setget set_beat, get_beat # calculated value!
 
 export(float) var lerp_val: float = 0.5
@@ -53,27 +53,27 @@ func playback_to_beat(playback_pos: float) -> float:
 # overrides of AudioStreamPlayer #
 ##################################
 
-func play_absolute(from_position: float = 0.0) -> void:
-	play(from_position - offset)
+func play(from_position: float = 0.0) -> void:
+	play_from_music_offset(from_position - music_offset)
 
-func play(from_position: float = 0.0):
+func play_from_music_offset(from_position: float = 0.0):
 	if self.stream == null:
 		return
 		
 	_prevent_loop()
 	
 	self.playback_position = from_position
-	if from_position + offset >= 0.0:
-		.play(from_position + offset)
+	if from_position + music_offset >= 0.0:
+		.play(from_position + music_offset)
 	set_process(true)
 
 func seek(to_position: float) -> void:
 	self.playback_position = to_position
-	if to_position + offset < 0.0:
+	if to_position + music_offset < 0.0:
 		set_process(true)
 		.stop()
 	else:
-		.seek(to_position + offset)
+		.seek(to_position + music_offset)
 
 func seek_to_beat(beat: float) -> void:
 	self.beat = beat # this calls setter and changes playback_position
@@ -101,18 +101,31 @@ func _process(delta: float) -> void:
 # own methods #
 ###############
 
+# raw playback position with considering latency (Godot 3.2)
+# https://docs.godotengine.org/en/latest/tutorials/audio/sync_with_audio.html
+func _get_playback_position_with_latency() -> float:
+	return .get_playback_position() \
+			+ AudioServer.get_time_since_last_mix() \
+			- AudioServer.get_output_latency()
+
+# playback position zero considering latency (Godot 3.2)
+# https://docs.godotengine.org/en/latest/tutorials/audio/sync_with_audio.html
+func _latency_zero() -> float:
+	return AudioServer.get_time_since_last_mix() \
+		- AudioServer.get_output_latency()
+
 func _interpolate_playback_position(delta: float) -> void:
 	# update new virtual playback position
 	_playback_position_interpolated += delta
 	
-	if not _playback_position_interpolated < 0.0:
+	if _playback_position_interpolated >= - _latency_zero():
 		# if processing but not playing, play it
 		if not playing:
 			.play(0)
 			return
 
 		# if actual playback pos is changed, apply it
-		var super_pos: float = .get_playback_position() - offset
+		var super_pos: float = _get_playback_position_with_latency() - music_offset
 		if super_pos != _playback_position_last_known and super_pos != 0.0: # 0.0 when started. we ignore that
 			_playback_position_last_known = super_pos
 			
