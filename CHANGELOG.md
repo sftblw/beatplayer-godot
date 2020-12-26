@@ -7,7 +7,12 @@
 - methods are renamed
   - `play` -> `play_from_music_offset`
   - `play_absolute` -> `play`
+  - `seek_to_beat` -> `seek_beat`
+  - `offset` -> `music_offset`
 - minimal godot version bumped: 3.1 -> 3.2
+
+### added
+- `func seek_music`, `var playback_position_music` considers `music_offset`. zero is the beginning of music.
 
 ### fixed
 

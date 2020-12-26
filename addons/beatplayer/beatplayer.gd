@@ -11,6 +11,9 @@ var playback_position: float setget _set_playback_position, get_playback_positio
 var _playback_position_last_known: float = 0
 var _playback_position_interpolated: float = 0 # interpolated position by physics_process or process
 
+# zero is the starting point of music, accounting [music_offset].
+var playback_position_music: float setget _set_playback_position_music, get_playback_position_music
+
 export(float) var bpm: float = 100.0 # this can be set anytime since this value dosesn't affect other variables
 
 export(float) var music_offset: float = 0.0 # beat calculation offset where music starts in second. does not affect to playback position
@@ -30,12 +33,21 @@ func get_beat():
 	var beat_per_second: float = (bpm / 60.0)
 	return (self.playback_position) * beat_per_second
 
+# internal. don't call ouside of this node
 # this doesn't set seek
 func _set_playback_position(playback_position: float) -> void:
 	_playback_position_last_known = playback_position
 	_playback_position_interpolated = playback_position
 	
 func get_playback_position() -> float: return _playback_position_interpolated
+
+# internal. don't call ouside of this node
+# this doesn't set seek
+func _set_playback_position_music(playback_position: float) -> void:
+	self.playback_position = playback_position + music_offset
+	
+func get_playback_position_music() -> float:
+	return self.playback_position - music_offset
 
 ############
 # utillity #
@@ -69,13 +81,17 @@ func play_from_music_offset(from_position: float = 0.0):
 
 func seek(to_position: float) -> void:
 	self.playback_position = to_position
-	if to_position + music_offset < 0.0:
+	if to_position < 0.0:
 		set_process(true)
 		.stop()
 	else:
-		.seek(to_position + music_offset)
+		.seek(to_position)
 
-func seek_to_beat(beat: float) -> void:
+# seek but considers music offset
+func seek_music(to_position: float) -> void:
+	self.seek(to_position + music_offset)
+
+func seek_beat(beat: float) -> void:
 	self.beat = beat # this calls setter and changes playback_position
 	self.seek(self.playback_position)
 	
